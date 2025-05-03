@@ -26,7 +26,11 @@ def main(argv: list[str]) -> int:
         print("Unable to unpack unicharset file")
         return 1
 
-    generate_training_images.generate_image_files(text_files_folder, unicharset_path)
+    image_gen_success = generate_training_images.generate_image_files(
+        text_files_folder, unicharset_path
+    )
+    if not image_gen_success:
+        print("Training image gneneration encountered an error")
 
     return 0
 
