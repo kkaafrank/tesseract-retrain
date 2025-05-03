@@ -22,6 +22,8 @@ This repository requires both multiple Tesseract repositories to function. Run t
 git submodule update --init --recursive
 ```
 
+Additionally, you will need to follow the setup steps for the tesstrain repository. Namely installing the C utilities (like `make`, `wget`, and `gcc`). These can all be installed via [Cygwin](https://www.cygwin.com/)
+
 ### Virtual Envrionment
 
 It is adivsed to set up a virtual environment to prevent interfering with dependencies of other python enviroments you may have on your machine.
