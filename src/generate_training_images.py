@@ -13,6 +13,15 @@ UNICHARSET_SUFFIX = ".unicharset"
 
 
 def extract_unicode_character_set(target_language: str) -> Path | None:
+    """Extracts the base language's unicode character set
+
+    Args:
+        target_language (str): the base language, must match with an existing file in the tessdata repo
+
+    Returns:
+        Path | None: The path to the extracted unicode character set file.
+            None if the target language does not exist or the desired unicharset file was not found.
+    """
     target_traineddata = constants.REPO_ROOT / "tessdata" / target_language
     target_traineddata = target_traineddata.with_suffix(".traineddata")
     output_dir = DATA_FOLDER / "unpacked_traineddata"
@@ -44,6 +53,16 @@ def extract_unicode_character_set(target_language: str) -> Path | None:
 
 
 def generate_image_files(parent_folder: Path, unicode_character_set_path: Path) -> bool:
+    """Generates image files (.box and .tif) for each text file in parent_folder using
+    the font specified in the config
+
+    Args:
+        parent_folder (Path): folder containing all text files
+        unicode_character_set_path (Path): the extract unicharset file from the target language
+
+    Returns:
+        bool: if all image files were successfully generated
+    """
     text_files = parent_folder.glob(game_script_parsing.OUTPUT_TEXT_NAME_GLOB)
 
     for num_files, input_text_file in enumerate(text_files):
