@@ -10,6 +10,10 @@ The scripts in this repo WILL require changes if you wish to use them with other
 
 Python is required to run the scripts in this repo. This repo was written with Python 3.11. Python installers can be ofund [here](https://www.python.org/downloads/).
 
+### Tesseract
+
+Tesseract is requred to generate certain files for retraining the Tesseract models. Tesseract installers/source code can be found [here](https://github.com/tesseract-ocr/tesseract/releases). Once you have installed Tesseract, you will need to add the Tesseract install path to your PATH environment variable.
+
 ### Git Submodules
 
 This repository requires both multiple Tesseract repositories to function. Run the following command to initialize the submodules.
