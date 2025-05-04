@@ -19,6 +19,7 @@ def create_tesstrain_bash_script() -> None:
         f"START_MODEL={ENV['TARGET_LANG']}",
         f"TESSDATA={tessdata_path.as_posix()}",
         f"RATIO_TRAIN={TRAINING_RATIO}",
+        f"MAX_ITERATIONS={ENV['MAX_TRAINING_ITERATIONS']}",
     ]
 
     command_file_path = constants.REPO_ROOT / "data" / "make_training.sh"
@@ -35,6 +36,8 @@ def create_tesstrain_bash_script() -> None:
         command_file_path, "w", encoding="utf-8", newline="\n"
     ) as train_script_file:
         train_script_file.write(script_lines)
+
+    print(f"Created bash script for tesstrain at {command_file_path}")
 
 
 # TODO call created bash script

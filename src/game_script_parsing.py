@@ -109,10 +109,9 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
     worksheet = workbook["Anki"]
     previous_line = ""
     num_files = 0
+    max_files_reached = False
 
-    # TODO: udpate this when done testing
-    # for row_index in range(1, worksheet.max_row + 1, 1):
-    for row_index in range(1, 51, 1):
+    for row_index in range(1, worksheet.max_row + 1, 1):
         for col_index in range(1, worksheet.max_column + 1, 1):
             cell_value = worksheet.cell(row_index, col_index).value
             if not should_write_cell(cell_value):
@@ -127,6 +126,16 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
 
                 previous_line = text_to_write
                 num_files += 1
+
+            if (
+                ENV["LIMIT_INPUT_TEXT_FILES"]
+                and num_files >= ENV["MAX_LIMITED_TEXT_FILES"]
+            ):
+                max_files_reached = True
+                break
+
+        if max_files_reached:
+            break
 
         if row_index % 100 == 0:
             print(f"Finished extracting {row_index} rows of text from excel")
