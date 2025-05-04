@@ -15,6 +15,7 @@ def main(argv: list[str]) -> int:
 
     input_type = game_script_parsing.InputTypes(args.input_format)
 
+    if not args.resume_training:
     text_files_folder = game_script_parsing.extract_japanese_text(
         input_path, input_type
     )
@@ -31,6 +32,7 @@ def main(argv: list[str]) -> int:
     )
     if not image_gen_success:
         print("Training image gneneration encountered an error")
+            return 1
 
     return 0
 
