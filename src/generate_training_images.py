@@ -9,7 +9,7 @@ from src.env.env import ENV
 OUTPUT_RESOLUTION = 1500
 OUTPUT_FONT_SIZE = 15
 DATA_FOLDER = constants.REPO_ROOT / "data"
-UNICHARSET_SUFFIX = ".unicharset"
+UNICHARSET_SUFFIX = "unicharset"
 
 
 def extract_unicode_character_set(target_language: str) -> Path | None:
@@ -22,7 +22,7 @@ def extract_unicode_character_set(target_language: str) -> Path | None:
         Path | None: The path to the extracted unicode character set file.
             None if the target language does not exist or the desired unicharset file was not found.
     """
-    target_traineddata = constants.REPO_ROOT / "tessdata" / target_language
+    target_traineddata = constants.REPO_ROOT / "tessdata_best" / target_language
     target_traineddata = target_traineddata.with_suffix(".traineddata")
     output_dir = DATA_FOLDER / "unpacked_traineddata"
     output_stub = output_dir / f"{target_language}."
