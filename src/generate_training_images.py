@@ -90,7 +90,7 @@ def generate_image_files(parent_folder: Path, unicode_character_set_path: Path) 
             )
         except Exception as e:
             print(
-                f"text2image command encountered an error on {str(input_text_file)}: ",
+                f"text2image command encountered an error on {input_text_file}: ",
                 e,
             )
             return False
