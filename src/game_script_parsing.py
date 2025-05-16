@@ -145,6 +145,12 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
 
 
 def parse_text_input(input_file_path: Path, output_folder_path: Path) -> None:
+    """Parses a large text file for Japanese text and writes each line to an individual text file
+
+    Args:
+        input_file_path (Path): the input text file
+        output_folder_path (Path): the folder to output to
+    """
     lines_to_write = []
     with open(input_file_path, "r", encoding="utf-8") as input_file:
         lines_to_write = input_file.readlines()
