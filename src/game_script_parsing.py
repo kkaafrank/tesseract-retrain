@@ -118,7 +118,7 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
                 continue
 
             text_to_write = cell_value
-            if ENV["SHOULD_STRIP_JPN_SPACES"] == "true":
+            if ENV["SHOULD_STRIP_JPN_SPACES"]:
                 text_to_write = strip_jpn_spaces(cell_value)
 
             if text_to_write and previous_line != text_to_write:
