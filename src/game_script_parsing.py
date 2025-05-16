@@ -19,6 +19,7 @@ _JAPANESE_SPACE_UNICODE_CHAR = "\u3000"
 OUTPUT_FILE_BASE = ENV["MODEL_NAME"].replace("_", ".") + ".exp{}"
 _OUTPUT_TEXT_NAME_FORMAT = OUTPUT_FILE_BASE + ".gt.txt"
 OUTPUT_TEXT_NAME_GLOB = _OUTPUT_TEXT_NAME_FORMAT.format("*")
+OUTPUT_TEXT_FILE_INDEX_REGEX = ".*" + _OUTPUT_TEXT_NAME_FORMAT.format("(\d+)")
 
 
 class InputTypes(Enum):
@@ -59,8 +60,8 @@ def should_write_cell(cell_value) -> bool:
     return True
 
 
-def strip_jpn_spaces(cell_text: str) -> str:
-    """Removes the Japanese space characters from string
+def strip_spaces(input_string: str) -> str:
+    """Removes space characters (normal and Japanese) from string
 
     Args:
         cell_text: string to clean
@@ -68,7 +69,8 @@ def strip_jpn_spaces(cell_text: str) -> str:
     Returns:
         str: text without Japanese space characters
     """
-    text_to_write = cell_text.replace(_JAPANESE_SPACE_UNICODE_CHAR, "")
+    text_to_write = input_string.replace(_JAPANESE_SPACE_UNICODE_CHAR, "")
+    text_to_write = input_string.replace(" ", "")
     return text_to_write
 
 
@@ -91,7 +93,8 @@ def extract_japanese_text(input_file_path: Path, input_type: InputTypes) -> Path
 
     if input_type == InputTypes.EXCEL:
         parse_excel_input(input_file_path, output_folder_path)
-    # TODO: parsing from text file
+    elif input_type == InputTypes.TEXT:
+        parse_text_input(input_file_path, output_folder_path)
     else:
         print("Input type not supported")
 
@@ -118,8 +121,8 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
                 continue
 
             text_to_write = cell_value
-            if ENV["SHOULD_STRIP_JPN_SPACES"] == "true":
-                text_to_write = strip_jpn_spaces(cell_value)
+            if ENV["SHOULD_STRIP_JPN_SPACES"]:
+                text_to_write = strip_spaces(cell_value)
 
             if text_to_write and previous_line != text_to_write:
                 write_line_to_output_file(text_to_write, output_folder_path, num_files)
@@ -139,6 +142,34 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
 
         if row_index % 100 == 0:
             print(f"Finished extracting {row_index} rows of text from excel")
+
+
+def parse_text_input(input_file_path: Path, output_folder_path: Path) -> None:
+    """Parses a large text file for Japanese text and writes each line to an individual text file
+
+    Args:
+        input_file_path (Path): the input text file
+        output_folder_path (Path): the folder to output to
+    """
+    lines_to_write = []
+    with open(input_file_path, "r", encoding="utf-8") as input_file:
+        lines_to_write = input_file.readlines()
+
+    for line_index, line in enumerate(lines_to_write):
+        if not should_write_cell(line):
+            continue
+
+        text_to_write = line
+        if ENV["SHOULD_STRIP_JPN_SPACES"]:
+            text_to_write = strip_spaces(line)
+
+        write_line_to_output_file(text_to_write, output_folder_path, line_index)
+
+        if (
+            ENV["LIMIT_INPUT_TEXT_FILES"]
+            and line_index >= ENV["MAX_LIMITED_TEXT_FILES"]
+        ):
+            break
 
 
 def write_line_to_output_file(
