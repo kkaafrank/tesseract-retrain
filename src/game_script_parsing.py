@@ -93,7 +93,8 @@ def extract_japanese_text(input_file_path: Path, input_type: InputTypes) -> Path
 
     if input_type == InputTypes.EXCEL:
         parse_excel_input(input_file_path, output_folder_path)
-    # TODO: parsing from text file
+    elif input_type == InputTypes.TEXT:
+        parse_text_input(input_file_path, output_folder_path)
     else:
         print("Input type not supported")
 
@@ -141,6 +142,34 @@ def parse_excel_input(input_file_path: Path, output_folder_path: Path) -> None:
 
         if row_index % 100 == 0:
             print(f"Finished extracting {row_index} rows of text from excel")
+
+
+def parse_text_input(input_file_path: Path, output_folder_path: Path) -> None:
+    """Parses a large text file for Japanese text and writes each line to an individual text file
+
+    Args:
+        input_file_path (Path): the input text file
+        output_folder_path (Path): the folder to output to
+    """
+    lines_to_write = []
+    with open(input_file_path, "r", encoding="utf-8") as input_file:
+        lines_to_write = input_file.readlines()
+
+    for line_index, line in enumerate(lines_to_write):
+        if not should_write_cell(line):
+            continue
+
+        text_to_write = line
+        if ENV["SHOULD_STRIP_JPN_SPACES"]:
+            text_to_write = strip_spaces(line)
+
+        write_line_to_output_file(text_to_write, output_folder_path, line_index)
+
+        if (
+            ENV["LIMIT_INPUT_TEXT_FILES"]
+            and line_index >= ENV["MAX_LIMITED_TEXT_FILES"]
+        ):
+            break
 
 
 def write_line_to_output_file(
