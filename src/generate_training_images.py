@@ -1,7 +1,12 @@
 import os
 import subprocess
 from pathlib import Path
+from re import match
 from shutil import rmtree
+
+import PIL
+import PIL.Image
+import PIL.ImageOps
 
 from src import constants, game_script_parsing
 from src.env.env import ENV
@@ -101,5 +106,34 @@ def generate_image_files(parent_folder: Path, unicode_character_set_path: Path) 
                 e,
             )
             return False
+
+    return True
+
+
+def invert_images(folder: Path) -> bool:
+    """Inverts the generated image files (black on white to white on black)
+
+    Args:
+        folder (Path): the folder containing all the image files
+
+    Returns:
+        bool: whether image inversion was successful
+    """
+    image_glob_pattern = game_script_parsing.OUTPUT_FILE_BASE.format("*")
+    image_glob_pattern += ".tif"
+    for image_file_path in folder.glob(image_glob_pattern):
+        with PIL.Image.open(image_file_path) as image_file:
+            inverted_image = PIL.ImageOps.invert(image_file)
+
+            try:
+                inverted_image.save(image_file_path, format="TIFF")
+            except Exception as e:
+                print(f"Error saving inverted image: {e}")
+                return False
+
+        # update box file modification timestamp
+        #   to prevent make from regenerating the box files incorrectly
+        box_file_path = image_file_path.with_suffix(".box")
+        os.utime(box_file_path)
 
     return True
