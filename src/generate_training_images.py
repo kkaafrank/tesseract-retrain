@@ -65,8 +65,15 @@ def generate_image_files(parent_folder: Path, unicode_character_set_path: Path) 
     """
     text_files = parent_folder.glob(game_script_parsing.OUTPUT_TEXT_NAME_GLOB)
 
-    for num_files, input_text_file in enumerate(text_files):
-        output_file_stub = game_script_parsing.OUTPUT_FILE_BASE.format(num_files)
+    for input_text_file in text_files:
+        file_name_match = match(
+            game_script_parsing.OUTPUT_TEXT_FILE_INDEX_REGEX, str(input_text_file)
+        )
+        if file_name_match is None:
+            continue
+
+        file_index = file_name_match.group(1)
+        output_file_stub = game_script_parsing.OUTPUT_FILE_BASE.format(file_index)
 
         try:
             subprocess.run(
